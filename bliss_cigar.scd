@@ -35,8 +35,24 @@ a = Synth( \kl, [ \ringtimes,  [0.09, 0.06, 0.08, 0.09], \freqs, [800, 883, 1143
 a.set(\gate, 0);
 a.set(\ringtimes,  [0.09, 0.06, 0.08, 0.09], \freqs, [800, 883, 1143, 1222]);
 
+//combfilter
+SynthDef(\cf, {
+	arg gate=1, rel=0.7, decay=1, rlo=0.001, rhi=0.07, rate=0.2, amp=2;
+	var source, sig, env, lfodel;
+	lfodel = SinOsc.kr(rate).range(rlo, rhi);
+	env = EnvGen.ar(Env.asr(releaseTime:rel), gate, doneAction:2);
+	source = SoundIn.ar(0);
+	sig = CombC.ar(source, delaytime:lfodel, decaytime:decay);
+	Out.ar(0, sig*env*amp);
+}).add;
 
-a = Synth(\gh, [ \del, 0.2, \damp, 0.8, \size, 2.3, \diff, 0.1, \fb, 0.9, \moddepth, 0.7, \modfreq, 2.5] );
+a = Synth(\cf, [ \rate, 0.3, \decay, 2.0, \rlo, 0.04, \rhi, 0.055, \amp, 2 ]);
 a.set(\gate, 0);
+a = Synth(\cf, [ \rate, 13, \decay, 5.0, \rlo, 0.021, \rhi, 0.026, \amp, 1.8 ]);
+a.set(\gate, 0);
+a.set(\rate, 13, \decay, 5.0, \rlo, 0.021, \rhi, 0.026, \amp, 1.8);
+
+
+
 
 
