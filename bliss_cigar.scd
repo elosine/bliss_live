@@ -66,6 +66,20 @@ SynthDef(\as, {
 }).add;
 
 a = Synth(\as, [\buf, ~s1]);
-a.set(
-a.set(\thresh, 0.0);
+a.set(\gate, 0);
+
+SynthDef(\guitarAmp, {
+	arg ibs=0, obs=0, amp=1, atk = 0.01, decay=0, sus=1, rel=0.1, crv = -2, gate=1,amount=0.99;
+	var source, dsp, env, amCoef;
+	env = EnvGen.ar( Env.adsr(atk, decay, sus, rel, curve:crv), gate );
+	source = SoundIn.ar(ibs);
+	source = HPF.ar(source, 400)*5;
+	//amount = 0.99;
+	amCoef= 2*amount/(1-amount);
+	dsp = MidEQ.ar(LPF.ar((1+amCoef)*source/(1+(amCoef*source.abs)), [3800, 3900])*0.5, 120, 0.7, 8);
+	Out.ar(obs, dsp*amp*env);
+}).add;
+
+a = Synth(\guitarAmp);
+a.set(\gate, 0);
 
