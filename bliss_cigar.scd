@@ -52,7 +52,20 @@ a = Synth(\cf, [ \rate, 13, \decay, 5.0, \rlo, 0.021, \rhi, 0.026, \amp, 1.8 ]);
 a.set(\gate, 0);
 a.set(\rate, 13, \decay, 5.0, \rlo, 0.021, \rhi, 0.026, \amp, 1.8);
 
+//sample trigger
+~s1 = Buffer.read(s,"/Volumes/Ute/DDMI/Samplistic/breakingwindie-2.wav" );
 
+SynthDef(\as, {
+	arg gate=1, rel=0.7, buf, startpos=0, rate=1, amp=2, inamp=3;
+	var source, sig, env, samp;
+	env = EnvGen.ar(Env.asr(releaseTime:rel), gate, doneAction:2);
+	source = SoundIn.ar(0)*inamp;
+	samp = PlayBuf.ar(1, buf, rate:rate, startPos:startpos, loop:1);
+	sig = samp*Amplitude.kr(source);
+	Out.ar(0, sig*env*amp);
+}).add;
 
-
+a = Synth(\as, [\buf, ~s1]);
+a.set(
+a.set(\thresh, 0.0);
 
